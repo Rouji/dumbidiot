@@ -1,0 +1,34 @@
+services:
+  llamacpp:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: llamacpp
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./volumes/models:/models
+    command:
+      - -m
+      - /models/tinyswallow-1.5b-instruct-q8_0.gguf
+#      - /models/llm-jp-3-3.7b-instruct3-Q4_0.gguf
+#      - --jinja
+#      - --chat-template-file
+#      - /models/llm-jp-template.jinja
+      - --port
+      - "8000"
+      - --host
+      - 0.0.0.0
+      - -n
+      - 8192
+      - -t
+      - 12
+  idiot:
+    build:
+      context: .
+    restart: unless-stopped
+    environment:
+      LLAMA_HOST: llamacpp:8000
+      IRC_NICK: dumbidiot
+      IRC_CHANNEL: "##japanese"
+      IRC_SERVER: irc.libera.chat
+      IRC_PORT: 6697
+      SYSTEM_PROMPT: "あなたは誠実で優秀な日本人のアシスタントです。"
